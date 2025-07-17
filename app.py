@@ -12,10 +12,10 @@ query = st.text_input("Search for a branded product:", "Coca-Cola 1.75L")
 
 # After user enters query:
 results = (
-    search_tesco(query)
-    + search_asda(query)
-    + search_sainsburys(query)
-    + search_morrisons(query)
+    cached_search_tesco(query)
+    + cached_search_asda(query)
+    + cached_search_sainsburys(query)
+    + cached_search_morrisons(query)
 )
 
 with st.sidebar:
