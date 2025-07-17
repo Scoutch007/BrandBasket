@@ -1,6 +1,12 @@
 import requests
 from bs4 import BeautifulSoup
+import streamlit as st
 
+@st.cache_data(ttl=3600)  # Cache for 1 hour
+def cached_search_morrisons(query):
+    from scrapers.morrisons import search_morrisons
+    return search_morrisons(query)
+    
 def search_morrisons(query):
     url = f"https://groceries.morrisons.com/search?entry={query.replace(' ', '+')}"
     headers = {"User-Agent": "Mozilla/5.0"}
