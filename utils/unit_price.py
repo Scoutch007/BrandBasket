@@ -2,30 +2,38 @@ import re
 
 def extract_quantity(name):
     """
-    Extracts quantity and unit from product name, returns (value in base unit, unit type)
+    Extracts quantity from product name. Handles single units and multipacks.
+    Returns: (total_quantity, unit_type)
     """
-    match = re.search(r"([\d\.]+)\s?(ml|l|cl|g|kg)", name.lower())
-    if not match:
-        return None, None
-
-    quantity = float(match.group(1))
-    unit = match.group(2)
-
-    # Convert all volumes to litres, weights to kg
-    if unit == "ml":
-        return quantity / 1000, "L"
-    elif unit == "cl":
-        return quantity / 100, "L"
-    elif unit == "l":
-        return quantity, "L"
-    elif unit == "g":
-        return quantity / 1000, "kg"
-    elif unit == "kg":
-        return quantity, "kg"
+    name = name.lower()
+    
+    # First handle multipack like "6 x 330ml" or "4x500g"
+    multipack_match = re.search(r"(\d+)\s*[xX×]\s*([\d\.]+)\s?(ml|l|cl|g|kg)", name)
+    if multipack_match:
+        count = int(multipack_match.group(1))
+        qty = float(multipack_match.group(2))
+        unit = multipack_match.group(3)
     else:
-        return None, None
+        # Fallback: single quantity
+        match = re.search(r"([\d\.]+)\s?(ml|l|cl|g|kg)", name)
+        if not match:
+            return None, None
+        count = 1
+        qty = float(match.group(1))
+        unit = match.group(2)
 
-def calculate_unit_price(price, quantity):
-    if quantity and quantity > 0:
-        return round(price / quantity, 2)
-    return None
+    # Normalize to base unit
+    if unit == "ml":
+        total = count * qty / 1000
+        return total, "L"
+    elif unit == "cl":
+        total = count * qty / 100
+        return total, "L"
+    elif unit == "l":
+        return count * qty, "L"
+    elif unit == "g":
+        return count * qty / 1000, "kg"
+    elif unit == "kg":
+        return count * qty, "kg"
+
+    return None, None
