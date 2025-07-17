@@ -7,6 +7,9 @@ from utils.matcher import group_similar_products
 from utils.unit_price import extract_quantity, calculate_unit_price
 from utils.history import save_price_entry, get_history_for_url
 from utils.exporter import generate_csv, generate_pdf
+from utils.history import init_db
+
+init_db()
 
 st.title("🛒 UK Supermarket Price Comparison")
 query = st.text_input("Search for a branded product:", "Coca-Cola 1.75L")
