@@ -16,6 +16,15 @@ results = (
     + search_morrisons(query)
 )
 
+with st.sidebar:
+    st.header("🔍 Filters")
+    selected_supermarkets = st.multiselect(
+        "Select Supermarkets", 
+        ["Tesco", "Asda", "Sainsbury’s", "Morrisons"], 
+        default=["Tesco", "Asda", "Sainsbury’s", "Morrisons"]
+    )
+    price_min, price_max = st.slider("Price Range (£)", 0.0, 10.0, (0.0, 10.0), step=0.1)
+
 if results:
     grouped_results = group_similar_products(results)
 
