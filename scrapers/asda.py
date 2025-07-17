@@ -1,6 +1,12 @@
 import requests
 from bs4 import BeautifulSoup
+import streamlit as st
 
+@st.cache_data(ttl=3600)  # Cache for 1 hour
+def cached_search_asda(query):
+    from scrapers.asda import search_asda
+    return search_asda(query)
+    
 def search_asda(query):
     url = f"https://groceries.asda.com/search/{query.replace(' ', '%20')}"
     headers = {"User-Agent": "Mozilla/5.0"}
