@@ -1,5 +1,11 @@
 import requests
 from bs4 import BeautifulSoup
+import streamlit as st
+
+@st.cache_data(ttl=3600)  # Cache for 1 hour
+def cached_search_tesco(query):
+    from scrapers.tesco import search_tesco
+    return search_tesco(query)
 
 def search_tesco(query):
     url = f"https://www.tesco.com/groceries/en-GB/search?query={query.replace(' ', '%20')}"
