@@ -1,5 +1,11 @@
 import requests
 from bs4 import BeautifulSoup
+import streamlit as st
+
+@st.cache_data(ttl=3600)  # Cache for 1 hour
+def cached_search_sainsburys(query):
+    from scrapers.sainsburys import search_sainsburys
+    return search_sainsburys(query)
 
 def search_sainsburys(query):
     url = f"https://www.sainsburys.co.uk/gol-ui/SearchResults/{query.replace(' ', '%20')}"
