@@ -6,6 +6,7 @@ from scrapers.morrisons import search_morrisons
 from utils.matcher import group_similar_products
 from utils.unit_price import extract_quantity, calculate_unit_price
 from utils.history import save_price_entry, get_history_for_url
+from utils.exporter import generate_csv, generate_pdf
 
 st.title("🛒 UK Supermarket Price Comparison")
 query = st.text_input("Search for a branded product:", "Coca-Cola 1.75L")
@@ -64,3 +65,6 @@ for item in results:
                 st.markdown("🕒 **Price History (last 5 entries)**")
                 st.dataframe(history.head(5)[["timestamp", "price"]])
             st.markdown("---")
+    if filtered_results:
+    st.download_button("⬇️ Export as CSV", generate_csv(filtered_results), "comparison.csv", "text/csv")
+    st.download_button("⬇️ Export as PDF", generate_pdf(filtered_results), "comparison.pdf", "application/pdf")
