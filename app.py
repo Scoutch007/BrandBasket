@@ -5,6 +5,7 @@ from scrapers.sainsburys import search_sainsburys
 from scrapers.morrisons import search_morrisons
 from utils.matcher import group_similar_products
 from utils.unit_price import extract_quantity, calculate_unit_price
+from utils.history import save_price_entry, get_history_for_url
 
 st.title("🛒 UK Supermarket Price Comparison")
 query = st.text_input("Search for a branded product:", "Coca-Cola 1.75L")
@@ -39,12 +40,14 @@ if results:
 
     # Enhance each product with quantity/unit and unit price
 for item in results:
+    save_price_entry(item["name"], item["supermarket"], item["price"], item["url"])
     qty, unit_type = extract_quantity(item["name"])
     item["quantity"] = qty
     item["unit_type"] = unit_type
     item["unit_price"] = calculate_unit_price(item["price"], qty)
     
     grouped_results = group_similar_products(filtered_results)
+    history = get_history_for_url(result["url"])
 
     for group in grouped_results:
         st.markdown("### 🧾 Matched Product Group")
@@ -57,4 +60,7 @@ for item in results:
             if result["unit_price"]:
                 st.write(f"📏 Unit Price: £{result['unit_price']:.2f} per {result['unit_type']}")
             st.markdown(f"[🔗 View Product]({result['url']})")
+            if not history.empty:
+                st.markdown("🕒 **Price History (last 5 entries)**")
+                st.dataframe(history.head(5)[["timestamp", "price"]])
             st.markdown("---")
