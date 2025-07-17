@@ -11,9 +11,28 @@ from utils.history import init_db
 from delivery import show_delivery_ui
 
 init_db()
-show_delivery_ui()
+show_delivery_ui(supabase=client, user_email=session.get("email"))
 
-st.title("🛒 UK Supermarket Price Comparison")
+# Example structure: Add a new tab or section
+st.set_page_config(page_title="BrandBasket", layout="wide")
+
+st.title("🛍️ BrandBasket - UK Supermarket Price Comparison")
+
+tabs = st.tabs(["Basket", "Compare", "Delivery", "Account"])
+
+# Assuming you have other views already:
+with tabs[0]:
+    st.write("🧺 Basket view here...")
+
+with tabs[1]:
+    st.write("📊 Basket comparison here...")
+
+with tabs[2]:  # 👈 NEW DELIVERY TAB
+    show_delivery_ui()
+
+with tabs[3]:
+    st.write("👤 User account view here...")
+
 query = st.text_input("Search for a branded product:", "Coca-Cola 1.75L")
 
 # After user enters query:
