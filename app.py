@@ -26,7 +26,12 @@ with st.sidebar:
     price_min, price_max = st.slider("Price Range (£)", 0.0, 10.0, (0.0, 10.0), step=0.1)
 
 if results:
-    grouped_results = group_similar_products(results)
+    filtered_results = [
+    item for item in results
+    if item["supermarket"] in selected_supermarkets
+    and price_min <= item["price"] <= price_max
+    ]
+    grouped_results = group_similar_products(filtered_results)
 
     for group in grouped_results:
         st.markdown("### 🧾 Matched Product Group")
