@@ -1,28 +1,32 @@
-import os
-import pandas as pd
+import sqlite3
 from datetime import datetime
+import pandas as pd
+import os
 
-HISTORY_FILE = "data/price_history.csv"
+DB_PATH = "data/price_history.db"
 
-def load_price_history():
-    if os.path.exists(HISTORY_FILE):
-        return pd.read_csv(HISTORY_FILE)
-    return pd.DataFrame(columns=["timestamp", "product_name", "supermarket", "price", "url"])
+def init_db():
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS price_history (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                timestamp TEXT,
+                product_name TEXT,
+                supermarket TEXT,
+                price REAL,
+                url TEXT
+            )
+        """)
 
 def save_price_entry(name, supermarket, price, url):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    entry = pd.DataFrame([{
-        "timestamp": timestamp,
-        "product_name": name,
-        "supermarket": supermarket,
-        "price": price,
-        "url": url
-    }])
-
-    df = load_price_history()
-    df = pd.concat([df, entry], ignore_index=True)
-    df.to_csv(HISTORY_FILE, index=False)
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute("""
+            INSERT INTO price_history (timestamp, product_name, supermarket, price, url)
+            VALUES (?, ?, ?, ?, ?)
+        """, (timestamp, name, supermarket, price, url))
 
 def get_history_for_url(url):
-    df = load_price_history()
-    return df[df["url"] == url].sort_values("timestamp", ascending=False)
+    with sqlite3.connect(DB_PATH) as conn:
+        df = pd.read_sql("SELECT * FROM price_history WHERE url = ? ORDER BY timestamp DESC", conn, params=(url,))
+    return df
